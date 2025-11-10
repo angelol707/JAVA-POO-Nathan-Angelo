@@ -1,0 +1,95 @@
+import java.util.ArrayList;
+
+public class Etudiant {
+
+    private static final double SEUIL_PASSAGE = 10.0; //seuil de passage
+
+
+    private String nom;
+    private double moyenne;
+    private String avis;
+    private ArrayList<Notation> notes;
+
+
+    public Etudiant(String nom) {
+        this.nom = nom;
+        this.notes = new ArrayList<>();
+        this.moyenne = 0.0;
+        this.avis = "Non calculé";
+    }
+
+
+    public void ajouterNote(Notation notation) {
+        this.notes.add(notation);
+    }
+
+
+    private double[] calculerSommes() {
+        double sommeProduits = 0.0;
+        int sommeCoefficients = 0;
+
+        for (Notation n : notes) {
+            sommeProduits += n.getNote() * n.getCoef();
+            sommeCoefficients += n.getCoef();
+        }
+        return new double[]{sommeProduits, (double) sommeCoefficients};
+    }
+
+    public double moyenne() {
+        if (notes.isEmpty()) {
+            this.moyenne = 0.0;
+            return 0.0;
+        }
+
+        double[] sommes = calculerSommes();
+        double sommeProduits = sommes[0];
+        double sommeCoefficients = sommes[1];
+
+        // Vérifie si la somme des coefficients est positive pour éviter une division par zéro
+        if (sommeCoefficients > 0) {
+            this.moyenne = sommeProduits / sommeCoefficients;
+        } else {
+            this.moyenne = 0.0; // Si tous les coefficients sont nuls (ne devrait pas arriver avec la validation)
+        }
+        return this.moyenne;
+    }
+
+
+    public String avis() {
+        // Calcule la moyenne si elle n'a pas encore été calculée ou est obsolète
+        if (this.moyenne == 0.0 && !notes.isEmpty()) {
+            moyenne(); // Appel de la méthode pour s'assurer que moyenne est à jour
+        }
+
+        // Utilisation du 'if' pour le seuil de passage
+        if (this.moyenne >= SEUIL_PASSAGE) {
+            this.avis = "Admis";
+        } else {
+            this.avis = "Non Admis";
+        }
+        return this.avis;
+    }
+
+    public void afficher() {
+        // Assure que moyenne et avis sont à jour avant l'affichage
+        double moy = moyenne();
+        String resultAvis = avis();
+
+
+        System.out.println("👨‍🎓 Informations de l'étudiant : " + nom);
+
+
+
+        if (notes.isEmpty()) {
+            System.out.println("  Aucune note enregistrée.");
+        } else {
+            for (Notation n : notes) {
+                n.afficher();
+            }
+        }
+
+        System.out.printf("Moyenne Générale: %.2f\n", moy);
+        System.out.println(" Avis de passage : **" + resultAvis + "**");
+
+    }
+}
