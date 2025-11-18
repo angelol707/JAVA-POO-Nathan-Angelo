@@ -14,16 +14,15 @@ public class Notation {
         this.coef = coef;
     }
 
+    public double getCoef() {
+        return coef;
+    }
+
     public double getNote() {
         return note;
     }
 
-    public int getCoef() {
-        return coef;
-    }
-
-
     public void afficher() {
-        System.out.printf("  -> Note: %.2f (Coef: %d)\n", note, coef);
+        System.out.println("Note: " + note + " | Coef: " + coef);
     }
 }
